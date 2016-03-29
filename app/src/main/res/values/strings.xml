@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">MyWebView</string>
+    <string name="action_settings">Settings</string>
+    <string name="error">Error</string>
+    <string name="ok">OKKK!</string>
+
+    <!-- Upload File -->
+    <string name="action_add_file">Upload image</string>
+    <string name="upload_file_title">Select an image</string>
+    <string name="upload_file_success">"Image successfully uploaded"</string>
+    <string name="upload_image_title">""Uploading "</string>
+
+</resources>
