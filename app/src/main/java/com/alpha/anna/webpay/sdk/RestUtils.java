@@ -296,8 +296,10 @@ public class RestUtils {
             // Define headers
             //
 
+            // Create an unique boundary
+            String boundary = "UploadBoundary";
 
-            conn.setRequestProperty("Content-Type", "multipart/form-data");
+            conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
             for (String key : headers.keySet()) {
                 conn.setRequestProperty(key.toString(), headers.get(key));
             }
@@ -309,6 +311,24 @@ public class RestUtils {
 
             int bytesAvailable = fileInputStream.available();
 
+            String marker = "\r\n--" + boundary + "\r\n";
+
+            //dos.writeBytes(marker);
+            //dos.writeBytes("Content-Disposition: form-data; name=\"picture\"; filename=\"contexttest.jpg\"\r\n\r\n");
+
+            // Create JSonObject :
+            // TODO long&latt
+            //JSONObject params = new JSONObject();
+            //params.put("name", file.getName());
+            //params.put("size", String.valueOf(bytesAvailable));
+            //params.put("longitude", file.getName());
+            //params.put("latitude", file.getName());
+
+            //dos.writeBytes(params.toString());
+
+            dos.writeBytes(marker);
+            dos.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"" + file.getName() + "\"\r\n");
+            dos.writeBytes("Content-Type: image/jpeg\r\n\r\n");
 
             int progressValue = 0;
             int bytesRead = 0;
@@ -323,6 +343,7 @@ public class RestUtils {
                 progress.onProgress((float) progressValue / bytesAvailable);
             }
 
+            dos.writeBytes(marker);
 
             //
             // Responses from the server (code and message)
@@ -373,6 +394,7 @@ public class RestUtils {
             e.printStackTrace();
         }
     }
+
 
     public void imageRequest(final String tag,
                              final String url,

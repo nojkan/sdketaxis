@@ -162,46 +162,6 @@ public final class OrangePaymentAPI {
     }
 
 
-    /**
-     * List the channels regarding the application
-     *
-     * @param success callback returning the channel list
-     * @param failure callback when error occurred
-     */
-    public void getChannels(final OrangeListener.Success<JSONArray> success,
-                          final OrangeListener.Error failure) {
-
-
-
-        // Create Tag used to cancel the request
-        final String tag = "list/channels/";
-
-        // Prepare URL
-        final String url = API_URL + API_VERSION + "/channels";
-
-        this.myRestUtil.jsonRequest(tag, Method.GET, url, null, getHeaders(),
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-                        try {
-
-                            JSONArray channelArray = response.getJSONArray("channels");
-                            success.onResponse(channelArray);
-                        } catch (JSONException jse) {
-                            //TODO EDV Handle Exception
-                            Log.v("json exception" , jse.toString());
-                        }
-                    }
-                }, new OrangeListener.Error() {
-                    @Override
-                    public void onErrorResponse(OrangeAPIException error) {
-                        Log.v("error", String.valueOf(error));
-                        failure.onErrorResponse(error);
-
-                    }
-                });
-    }
 
     /**
      * Generate a Map containing the HTTP headers needed to Cloud Api.
