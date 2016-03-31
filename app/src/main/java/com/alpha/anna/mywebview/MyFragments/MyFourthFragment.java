@@ -32,6 +32,7 @@ import com.alpha.anna.mywebview.MainActivity;
 import com.alpha.anna.mywebview.R;
 import com.alpha.anna.mywebview.UploadPicture;
 import com.alpha.anna.webpay.sdk.OrangePaymentAPI;
+import com.alpha.anna.webpay.sdk.OrangeStreetPixAPI;
 import com.alpha.anna.webpay.sdk.exception.OrangeAPIException;
 
 import java.io.ByteArrayOutputStream;
@@ -56,7 +57,7 @@ public class MyFourthFragment extends Fragment {
     private FragmentListener mFragmentListener;
 //    public Firebase dataBase, pushID;
     private static final int CAMERA_PIC_REQUEST = 1337;
-    private OrangePaymentAPI mApi;
+    private OrangeStreetPixAPI mApi;
 
 
     private boolean general;
@@ -77,7 +78,7 @@ public class MyFourthFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         final PackageManager pm = getContext().getPackageManager();
-        this.mApi = new OrangePaymentAPI(getContext());
+        this.mApi = new OrangeStreetPixAPI(getContext());
 
 
         makeShot = (ImageButton) view.findViewById(R.id.photo);

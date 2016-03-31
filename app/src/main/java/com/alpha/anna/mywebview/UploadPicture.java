@@ -10,8 +10,8 @@ import android.provider.OpenableColumns;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.alpha.anna.webpay.sdk.OrangePaymentAPI;
 import com.alpha.anna.webpay.sdk.OrangeListener;
+import com.alpha.anna.webpay.sdk.OrangeStreetPixAPI;
 import com.alpha.anna.webpay.sdk.exception.OrangeAPIException;
 
 import org.json.JSONObject;
@@ -20,7 +20,7 @@ import java.io.File;
 
 public class UploadPicture extends AsyncTask<Void, Integer, Boolean> {
 
-    private OrangePaymentAPI mApi;
+    private OrangeStreetPixAPI mApi;
     private Uri mUri;
     private File mFile;
 
@@ -33,7 +33,7 @@ public class UploadPicture extends AsyncTask<Void, Integer, Boolean> {
 
     private String mErrorMsg;
 
-    public UploadPicture(Context context, OrangePaymentAPI api, File file, Uri uri) {
+    public UploadPicture(Context context, OrangeStreetPixAPI api, File file, Uri uri) {
         mContext = context;
         mApi = api;
         mFile = file;
