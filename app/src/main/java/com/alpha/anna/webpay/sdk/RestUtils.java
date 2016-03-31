@@ -52,14 +52,21 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 
 public class RestUtils {
 
@@ -136,135 +143,6 @@ public class RestUtils {
     }
 
 
-    public void uploadRequest(URL url,
-                              File file,
-                              //String folderIdentifier,
-                              final Map<String, String> headers,
-                              final OrangeListener.Success<JSONObject> success,
-                              final OrangeListener.Progress progress,
-                              final OrangeListener.Error failure) {
-
-
-        // open a URL connection to the Server
-        FileInputStream fileInputStream = null;
-        try {
-            fileInputStream = new FileInputStream(file);
-
-            // Open a HTTP connection to the URL
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-            // Allow Inputs & Outputs
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
-
-            // Don't use a Cached Copy
-            conn.setUseCaches(false);
-
-            conn.setRequestMethod("POST");
-
-            //
-            // Define headers
-            //
-
-            // Create an unique boundary
-            String boundary = "UploadBoundary";
-
-            conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
-            for (String key : headers.keySet()) {
-                conn.setRequestProperty(key.toString(), headers.get(key));
-            }
-
-            //
-            // Write body part
-            //
-            DataOutputStream dos = new DataOutputStream(conn.getOutputStream());
-
-            int bytesAvailable = fileInputStream.available();
-
-            String marker = "\r\n--" + boundary + "\r\n";
-
-            dos.writeBytes(marker);
-            dos.writeBytes("Content-Disposition: form-data; name=\"description\"\r\n\r\n");
-
-            // Create JSonObject :
-            // TODO long&latt
-            JSONObject params = new JSONObject();
-            params.put("name", file.getName());
-            params.put("size", String.valueOf(bytesAvailable));
-            params.put("longitude", file.getName());
-            params.put("latitude", file.getName());
-
-            dos.writeBytes(params.toString());
-
-            dos.writeBytes(marker);
-            dos.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"" + file.getName() + "\"\r\n");
-            dos.writeBytes("Content-Type: image/jpeg\r\n\r\n");
-
-            int progressValue = 0;
-            int bytesRead = 0;
-            byte buf[] = new byte[1024];
-            BufferedInputStream bufInput = new BufferedInputStream(fileInputStream);
-            while ((bytesRead = bufInput.read(buf)) != -1) {
-                // write output
-                dos.write(buf, 0, bytesRead);
-                dos.flush();
-                progressValue += bytesRead;
-                // update progress bar
-                progress.onProgress((float) progressValue / bytesAvailable);
-            }
-
-            dos.writeBytes(marker);
-
-            //
-            // Responses from the server (code and message)
-            //
-            int serverResponseCode = conn.getResponseCode();
-            String serverResponseMessage = conn.getResponseMessage();
-
-            // close streams
-            fileInputStream.close();
-            dos.flush();
-            dos.close();
-
-            if (serverResponseCode == 200 || serverResponseCode == 201) {
-                BufferedReader rd = new BufferedReader(new InputStreamReader(
-                        conn.getInputStream()));
-
-                String response = "";
-                String line;
-                while ((line = rd.readLine()) != null) {
-                    Log.i("FileUpload", "Response: " + line);
-                    response += line;
-                }
-                rd.close();
-                JSONObject object = new JSONObject(response);
-                success.onResponse(object);
-            } else {
-                BufferedReader rd = new BufferedReader(new InputStreamReader(
-                        conn.getErrorStream()));
-                String response = "";
-                String line;
-                while ((line = rd.readLine()) != null) {
-                    Log.i("FileUpload", "Error: " + line);
-                    response += line;
-                }
-                rd.close();
-                JSONObject errorResponse = new JSONObject(response);
-                failure.onErrorResponse(new PaymentAPIException(serverResponseCode, errorResponse));
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (ProtocolException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     public void uploadRequest2(URL url,
                               File file,
@@ -281,7 +159,12 @@ public class RestUtils {
             fileInputStream = new FileInputStream(file);
 
             // Open a HTTP connection to the URL
+
+
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            //HttpsURLConnection conn = this.setupHttpsConnection(url.toString());
+
+
 
             // Allow Inputs & Outputs
             conn.setDoInput(true);
@@ -297,9 +180,9 @@ public class RestUtils {
             //
 
             // Create an unique boundary
-            String boundary = "UploadBoundary";
-
-            conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+            String boundary = "Boundary";
+            //ne fonctionne pas le setproperty
+            conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
             for (String key : headers.keySet()) {
                 conn.setRequestProperty(key.toString(), headers.get(key));
             }
@@ -327,7 +210,7 @@ public class RestUtils {
             //dos.writeBytes(params.toString());
 
             dos.writeBytes(marker);
-            dos.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"" + file.getName() + "\"\r\n");
+            dos.writeBytes("Content-Disposition: form-data; name=\"picture\"; filename=\"" + file.getName() + "\"\r\n");
             dos.writeBytes("Content-Type: image/jpeg\r\n\r\n");
 
             int progressValue = 0;
@@ -342,12 +225,14 @@ public class RestUtils {
                 // update progress bar
                 progress.onProgress((float) progressValue / bytesAvailable);
             }
-
+            dos.writeBytes("\r\n\r\n");
             dos.writeBytes(marker);
 
             //
             // Responses from the server (code and message)
             //
+
+            //TODO catch Android
             int serverResponseCode = conn.getResponseCode();
             String serverResponseMessage = conn.getResponseMessage();
 
@@ -437,7 +322,48 @@ public class RestUtils {
         mRequestQueue.add(request);
     }
 
+   /* private HttpsURLConnection setupHttpsConnection(String urlString) {
+        try {
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            Certificate ca = null;
 
+            //InputStream caInput = new BufferedInputStream(this.mContext.getAssets().open("expoapi.oranegadd.com.cer"));
+            InputStream caInput = new BufferedInputStream(this.mContext.getAssets().open("site-captif.cer"));
+
+            try {
+                ca = cf.generateCertificate(caInput);
+                System.out.println("ca=" + ((X509Certificate) ca).getSubjectDN());
+            } finally {
+                caInput.close();
+            }
+
+
+            // Create a KeyStore containing our trusted CAs
+            String keyStoreType = KeyStore.getDefaultType();
+            KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+            keyStore.load(null, null);
+            keyStore.setCertificateEntry("ca", ca);
+
+            // Create a TrustManager that trusts the CAs in our KeyStore
+            String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
+            tmf.init(keyStore);
+
+            // Create an SSLContext that uses our TrustManager
+            SSLContext context = SSLContext.getInstance("TLS");
+            context.init(null, tmf.getTrustManagers(), null);
+
+            URL url = new URL("https://expoapi.orangeadd.com/etaxis");
+            HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+            urlConnection.setSSLSocketFactory(context.getSocketFactory());
+
+            return urlConnection;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }*/
 }
 
 

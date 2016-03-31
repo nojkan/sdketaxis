@@ -70,6 +70,7 @@ public final class OrangePaymentAPI {
 //    private static String API_URL = "https://hawaii.orangeadd.com/etaxis/headers";
 
     //URL for Images
+    //private static String URL_IMG = "https://api.orange.com/et/upload";
     private static String URL_IMG = "http://hawaii.orangeadd.com/etaxis/upload";
 
     private static String API_VERSION = "v1";
@@ -184,7 +185,7 @@ public final class OrangePaymentAPI {
         //TODO Authent Apigee
         //headers.put("Authorization", "Bearer " + getSession().getAccessToken());
 
-        headersImg.put("Content-Type", "multipart/form-data");
+        //headersImg.put("Content-Type", "multipart/form-data;Boundary=Boundary");
 
         return headersImg;
     }
