@@ -67,17 +67,14 @@ public final class OrangePaymentAPI {
     public static final String SDK_VERSION = "0.0.1";
     // Payment server information
     private static String API_URL = "https://api.orange.com/orange-money-webpay/dev/v1/webpayment";
+    //private static String API_URL = "https://api.orange.com/t";
 //    private static String API_URL = "https://hawaii.orangeadd.com/etaxis/headers";
-
-    //URL for Images
-    //private static String URL_IMG = "https://api.orange.com/et/upload";
-    private static String URL_IMG = "http://hawaii.orangeadd.com/etaxis/upload";
 
     private static String API_VERSION = "v1";
 
     private com.alpha.anna.webpay.sdk.RestUtils myRestUtil;
     private GsonRequest myGsonRequest;
-
+    private JSONObject mResponse;
 
     /**
      * Create an instance of Orange Cloud Api
@@ -103,7 +100,7 @@ public final class OrangePaymentAPI {
 
 
         // Create Tag used to cancel the request
-        final String tag = "Event/channel/add/" + myJsonPayment.optString("name");
+        final String tag = "OM/webpay/";
 
 
         // Prepare URL
@@ -113,7 +110,9 @@ public final class OrangePaymentAPI {
         this.myRestUtil.jsonRequest(tag, Method.POST, url, myJsonPayment, getHeaders(), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                success.onResponse(new JSONObject());
+                Log.v("tagresp", response.toString());
+                success.onResponse(response);
+
             }
         }, new OrangeListener.Error() {
             @Override
@@ -127,39 +126,7 @@ public final class OrangePaymentAPI {
                 failure.onErrorResponse(error);
             }
         });
-    }
 
-    /**
-     * Upload a photo to the Server
-     *
-     * @param fileUri  Uri of photo to upload
-     * @param file name of photo to upload
-     * @param success  callback if upload is ok
-     * @param progress callback to notify upload progress
-     * @param failure  callback to notify error
-     */
-    public void upload(final Uri fileUri, final File file, final OrangeListener.Success<JSONObject> success,
-                       final OrangeListener.Progress progress, final OrangeListener.Error failure) {
-
-
-        URL url;
-        try {
-            //TODO prepare URL
-            //TODO set photo name
-            url = new URL(URL_IMG);
-//                    + "/files/content?name=" + filename);
-
-            this.myRestUtil.uploadRequest2(url, file, getHeadersImg(), success,progress,
-                    new OrangeListener.Error() {
-                        //TODO check session
-                        @Override
-                        public void onErrorResponse(OrangeAPIException error) {
-                            failure.onErrorResponse(error);
-                        }
-                    });
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
     }
 
 
@@ -174,20 +141,11 @@ public final class OrangePaymentAPI {
         //TODO Authent Apigee
         //headers.put("Authorization", "Bearer " + getSession().getAccessToken());
 
-       headers.put("Content-Type", "application/json");
+       //headers.put("Content-Type", "application/json");
        headers.put("Accept", "application/json");
        headers.put("Authorization", "Bearer h49PeiSj63FPMLZqDcdGt96juvtv");
         return headers;
     }
 
-    private Map<String, String> getHeadersImg() {
-        HashMap<String, String> headersImg = new HashMap<String, String>();
-        //TODO Authent Apigee
-        //headers.put("Authorization", "Bearer " + getSession().getAccessToken());
-
-        //headersImg.put("Content-Type", "multipart/form-data;Boundary=Boundary");
-
-        return headersImg;
-    }
 
 }

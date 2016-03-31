@@ -91,7 +91,7 @@ public final class OrangeStreetPixAPI {
             url = new URL(URL_IMG);
 //                    + "/files/content?name=" + filename);
 
-            this.myRestUtil.uploadRequest2(url, file, getHeadersImg(), success,progress,
+            this.myRestUtil.uploadRequest(url, file, getHeadersImg(), success,progress,
                     new OrangeListener.Error() {
                         //TODO check session
                         @Override

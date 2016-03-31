@@ -8,7 +8,7 @@ import java.net.URLEncoder;
 public class PaimentObj {
     private String merchant_key = "2fd5dbe6";
     private String currency = "OUV";
-    private String order_id = "MY_ORDER_ID_40";
+    private String order_id = "MY_ORDER_ID_62";
     private String return_url = "http://hawaii.orangeadd.com/etaxis/webpay/return";
     private String cancel_url = "http://hawaii.orangeadd.com/etaxis/webpay/cancel";
     private String notif_url = "http://hawaii.orangeadd.com/etaxis/webpay/notif";

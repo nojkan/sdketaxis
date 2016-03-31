@@ -1,10 +1,12 @@
 package com.alpha.anna.mywebview.MyFragments;
 
+import android.net.http.SslError;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -27,14 +29,23 @@ public class WebPageFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         WebView webPage = (WebView) view.findViewById(R.id.webView1);
         //url of the page
-        webPage.loadUrl("http://www.puffgames.com/snake-touch/");
+        Bundle args = getArguments();
+        String url = args.getString("URL");
+        webPage.loadUrl(url);
         //enable JavaScript
         WebSettings webSettings = webPage.getSettings();
         webSettings.setJavaScriptEnabled(true);
         //links clicked by user
-        webPage.setWebViewClient(new WebViewClient());
+        webPage.setWebViewClient(new MyWebViewClient());
         //size of the webpage
         webPage.getSettings().setLoadWithOverviewMode(true);
         webPage.getSettings().setUseWideViewPort(true);
+    }
+
+    private class MyWebViewClient extends WebViewClient {
+        @Override
+        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+            handler.proceed(); // Ignore SSL certificate errors
+        }
     }
 }

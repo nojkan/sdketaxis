@@ -29,7 +29,7 @@ import com.alpha.anna.webpay.sdk.exception.OrangeAPIException;
 public final class OrangeListener {
 
     /**
-     * Callback interface for delivering responses Cloud Api.
+     * Callback interface for delivering responses  Api.
      */
     public interface Success<T> {
         /**

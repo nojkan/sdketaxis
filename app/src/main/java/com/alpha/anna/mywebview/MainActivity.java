@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity implements FragmentListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_main);
-        loadFragment(new com.alpha.anna.mywebview.MyFragments.MyFourthFragment(), false);
+        loadFragment(new com.alpha.anna.mywebview.MyFragments.PaimentFragment(), false);
 
     }
 

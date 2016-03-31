@@ -37,6 +37,7 @@ public class PaimentFragment extends Fragment {
     private FragmentListener mFragmentListener;
     private OrangePaymentAPI mApi;
     private Gson gson;
+    private JSONObject mjsonOM = new JSONObject();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -76,14 +77,19 @@ public class PaimentFragment extends Fragment {
                     mApi = new OrangePaymentAPI(getContext());
 
                     postPayments();
+                    //try {
+                    //    Log.v("myrespOM", mjsonOM.getString("payment_url"));
+                    //} catch (JSONException e) {
+                    //    e.printStackTrace();
+                    //}
 
-                    mFragmentListener.loadFragment(new com.alpha.anna.mywebview.MyFragments.WebPageFragment(), true);
+
                 }
             }
         });
 
     }
-
+/*
     public void postPayments() {
 
 //            String jsonStr =  "{\"merchant_key\":\"" + obj.getMerchant_key() + "\"," +
@@ -124,11 +130,13 @@ public class PaimentFragment extends Fragment {
 //        Assert.assertNotNull(jo);
 
 
-        OrangeListener.Success<JSONObject> defaultListener = new OrangeListener.Success<JSONObject>() {
+        final OrangeListener.Success<JSONObject> defaultListener = new OrangeListener.Success<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 // Add new result in stack and display data in the listView
-                Log.v("response create payment", response.toString());
+                Log.v("response create payment", String.valueOf(response));
+                mjsonOM = (JSONObject) response;
+
 
             }
         };
@@ -140,6 +148,43 @@ public class PaimentFragment extends Fragment {
             }
         };
         mApi.postPayment(jo, defaultListener, defaultErrorListener);
+
+    }
+
+*/
+
+
+    public void postPayments() {
+        JSONObject PaymentOjb = new JSONObject();
+
+
+        final OrangeListener.Success<JSONObject> defaultListener = new OrangeListener.Success<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                // Add new result in stack and display data in the listView
+                Log.v("response crea pay", response.toString());
+                //mTextView.setText(response.toString());
+                String url = response.optString("payment_url");
+                Log.v("url", url);
+                if (url != null) {
+                    com.alpha.anna.mywebview.MyFragments.WebPageFragment webPageFragment = new com.alpha.anna.mywebview.MyFragments.WebPageFragment();
+                    Bundle args = new Bundle();
+                    args.putString("URL", url);
+                    webPageFragment.setArguments(args);
+                    mFragmentListener.loadFragment(webPageFragment, true);
+                } else {
+                    // popup erreur
+                }
+            }
+        };
+
+        OrangeListener.Error defaultErrorListener = new OrangeListener.Error() {
+            @Override
+            public void onErrorResponse(OrangeAPIException error) {
+                failure(error);
+            }
+        };
+        mApi.postPayment(PaymentOjb, defaultListener, defaultErrorListener);
     }
 
 

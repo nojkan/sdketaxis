@@ -100,7 +100,17 @@ public class RestUtils {
                             final Response.Listener<JSONObject> success,
                             final OrangeListener.Error failure) {
 
-        JsonObjectRequest jsonObjReq = new JsonObjectRequest(method, url, params, success,
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(method, url, params,
+
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject jsonResp) {
+                        Log.v("log",jsonResp.toString());
+                        success.onResponse(jsonResp);
+                    }
+                }
+
+                ,
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
@@ -144,7 +154,7 @@ public class RestUtils {
 
 
 
-    public void uploadRequest2(URL url,
+    public void uploadRequest(URL url,
                               File file,
                               //String folderIdentifier,
                               final Map<String, String> headers,
